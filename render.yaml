@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: snow123-site
+    runtime: node
+    rootDir: backend
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: SNOW123_ADMIN_PASSWORD
+        sync: false
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: snow123-data
+      mountPath: /var/data
+      sizeGB: 1

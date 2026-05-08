@@ -1,0 +1,4 @@
+data/*.db
+data/*.sqlite
+data/*.sqlite-shm
+data/*.sqlite-wal

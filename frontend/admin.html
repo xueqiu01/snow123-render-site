@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snow123 后台管理</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<style>
+:root {
+  --bg: #f3f7f2;
+  --panel: rgba(255, 255, 255, 0.9);
+  --panel-strong: #ffffff;
+  --line: #d8e7de;
+  --line-soft: #e9f2ec;
+  --text: #1e3127;
+  --muted: #678071;
+  --brand: #1f8f5f;
+  --brand-deep: #155f40;
+  --brand-soft: #e6f5ec;
+  --accent: #c7a56a;
+  --shadow: 0 18px 45px rgba(23, 53, 39, 0.08);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Avenir Next', 'PingFang SC', 'Microsoft YaHei', -apple-system, sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(199, 165, 106, 0.22), transparent 28%),
+    radial-gradient(circle at top right, rgba(31, 143, 95, 0.18), transparent 26%),
+    linear-gradient(180deg, #f8fbf8 0%, #eef4ef 100%);
+  color: var(--text);
+}
+.hidden { display: none !important; }
+.page {
+  max-width: 1520px;
+  margin: 0 auto;
+  padding: 30px 24px 44px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+.title {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--brand-deep);
+}
+.desc {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 14px;
+  max-width: 720px;
+}
+.toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.btn {
+  border: none;
+  border-radius: 14px;
+  padding: 11px 15px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.btn:hover, .mini:hover {
+  transform: translateY(-1px);
+}
+.btn-primary {
+  background: linear-gradient(135deg, #2aa56d 0%, #155f40 100%);
+  color: #fff;
+  box-shadow: 0 14px 28px rgba(31, 143, 95, 0.24);
+}
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--line);
+  color: var(--brand-deep);
+}
+.layout {
+  display: grid;
+  grid-template-columns: 430px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.stack {
+  display: grid;
+  gap: 20px;
+}
+.panel {
+  background: var(--panel);
+  border: 1px solid rgba(216, 231, 222, 0.9);
+  backdrop-filter: blur(12px);
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.panel h2 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--brand-deep);
+}
+.panel-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.panel-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-deep);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.field {
+  margin-bottom: 12px;
+}
+.field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 700;
+}
+.field input, .field textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 11px 13px;
+  font: inherit;
+  background: rgba(251, 253, 251, 0.95);
+  color: var(--text);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+.field input:focus, .field textarea:focus {
+  outline: none;
+  border-color: rgba(31, 143, 95, 0.55);
+  box-shadow: 0 0 0 4px rgba(31, 143, 95, 0.12);
+  background: #fff;
+}
+.field textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.status {
+  min-height: 20px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--brand);
+}
+.danger {
+  color: #c0392b;
+}
+.list-top {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.search {
+  flex: 1;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 11px 13px;
+  font: inherit;
+  background: rgba(255, 255, 255, 0.9);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th, td {
+  border-bottom: 1px solid var(--line-soft);
+  padding: 12px 8px;
+  text-align: left;
+  vertical-align: top;
+  font-size: 13px;
+}
+th {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+tr:hover {
+  background: rgba(31, 143, 95, 0.04);
+}
+.row-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.check-cell {
+  width: 36px;
+}
+.check-input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--brand);
+  cursor: pointer;
+}
+.mini {
+  padding: 7px 11px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.96);
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--brand-deep);
+  font-weight: 700;
+}
+.quote-detail {
+  margin-top: 16px;
+  border-top: 1px solid var(--line-soft);
+  padding-top: 16px;
+}
+.quote-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.quote-detail-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(242, 249, 244, 0.96) 100%);
+  border: 1px solid var(--line-soft);
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+.quote-detail-card .k {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+.quote-detail-card .v {
+  font-size: 14px;
+  color: var(--text);
+  word-break: break-word;
+}
+.quote-detail-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(380px, 0.8fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.hero-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 174px;
+  background:
+    linear-gradient(135deg, rgba(21, 95, 64, 0.98) 0%, rgba(35, 130, 88, 0.94) 52%, rgba(199, 165, 106, 0.9) 100%);
+  color: #fff;
+}
+.hero-card::after {
+  content: '';
+  position: absolute;
+  right: -40px;
+  top: -30px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+}
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.hero-title {
+  position: relative;
+  z-index: 1;
+  margin-top: 16px;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  max-width: 560px;
+}
+.hero-desc {
+  position: relative;
+  z-index: 1;
+  margin-top: 14px;
+  max-width: 640px;
+  color: rgba(255, 255, 255, 0.86);
+  line-height: 1.7;
+}
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.stat-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(246, 250, 247, 0.96) 100%);
+  border: 1px solid rgba(216, 231, 222, 0.95);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 12px 24px rgba(23, 53, 39, 0.05);
+}
+.stat-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.stat-value {
+  margin-top: 10px;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: var(--brand-deep);
+}
+.stat-meta {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.sticky-panel {
+  position: sticky;
+  top: 20px;
+}
+.subtle-sep {
+  height: 1px;
+  margin: 14px 0 4px;
+  background: linear-gradient(90deg, rgba(31, 143, 95, 0.18), rgba(31, 143, 95, 0));
+}
+.section-note {
+  color: var(--muted);
+  font-size: 13px;
+}
+.table-shell {
+  padding: 8px 10px 2px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(233, 242, 236, 0.95);
+}
+.bulk-tools {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr auto auto;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.bulk-tools input,
+.bulk-tools select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 11px 13px;
+  font: inherit;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+}
+.side-nav {
+  margin-bottom: 16px;
+  padding: 10px;
+  border-radius: 18px;
+  border: 1px solid rgba(233, 242, 236, 0.95);
+  background: rgba(255, 255, 255, 0.74);
+}
+.side-nav-title {
+  padding: 6px 8px 10px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.side-nav a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+  padding: 11px 12px;
+  border-radius: 14px;
+  color: var(--brand-deep);
+  font-weight: 700;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+.side-nav a:hover {
+  background: rgba(31, 143, 95, 0.08);
+  transform: translateX(2px);
+}
+.filters {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 180px 140px;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.filters-4 {
+  grid-template-columns: minmax(220px, 1fr) 180px 180px 140px;
+}
+.filters select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 11px 13px;
+  font: inherit;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+}
+.filters select:focus {
+  outline: none;
+  border-color: rgba(31, 143, 95, 0.55);
+  box-shadow: 0 0 0 4px rgba(31, 143, 95, 0.12);
+}
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 2px 4px;
+}
+.pager {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.footer-note {
+  color: var(--muted);
+  font-size: 13px;
+}
+.stats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.stats-chip {
+  border-radius: 16px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(244,249,246,0.95));
+  border: 1px solid rgba(233, 242, 236, 0.95);
+}
+.stats-chip .label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.stats-chip .value {
+  margin-top: 8px;
+  font-size: 24px;
+  color: var(--brand-deep);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+.overview-stack {
+  display: grid;
+  gap: 14px;
+}
+.activity-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.activity-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(246,250,247,0.96));
+  border: 1px solid rgba(216, 231, 222, 0.95);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 12px 24px rgba(23, 53, 39, 0.05);
+}
+.activity-title {
+  color: var(--brand-deep);
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.activity-list {
+  display: grid;
+  gap: 10px;
+}
+.activity-item {
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(233, 242, 236, 0.95);
+}
+.activity-item strong {
+  display: block;
+  font-size: 13px;
+  color: var(--text);
+}
+.activity-item span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.badge-soft {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: #eef7f1;
+  color: var(--brand-deep);
+  font-size: 12px;
+  font-weight: 700;
+}
+@media (max-width: 1100px) {
+  .layout { grid-template-columns: 1fr; }
+  .quote-detail-grid { grid-template-columns: 1fr; }
+  .hero { grid-template-columns: 1fr; }
+  .sticky-panel { position: static; }
+  .filters { grid-template-columns: 1fr 1fr; }
+  .filters-4 { grid-template-columns: 1fr 1fr; }
+  .stats-strip { grid-template-columns: 1fr 1fr; }
+  .activity-grid { grid-template-columns: 1fr; }
+  .bulk-tools { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 720px) {
+  .page { padding: 20px 14px 34px; }
+  .header { flex-direction: column; }
+  .toolbar { justify-content: flex-start; }
+  .title { font-size: 30px; }
+  .hero-title { font-size: 28px; }
+  .overview-grid { grid-template-columns: 1fr; }
+  .filters { grid-template-columns: 1fr; }
+  .filters-4 { grid-template-columns: 1fr; }
+  .stats-strip { grid-template-columns: 1fr; }
+  .activity-grid { grid-template-columns: 1fr; }
+  .bulk-tools { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page" id="loginPage">
+  <div class="panel" style="max-width:460px;margin:60px auto">
+    <h2>后台登录</h2>
+    <div class="desc" style="margin-bottom:16px">请输入管理员密码后进入 Snow123 后台。</div>
+    <div class="field">
+      <label for="loginPassword">管理员密码</label>
+      <input id="loginPassword" type="password" placeholder="请输入密码" onkeydown="if(event.key==='Enter') login()">
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="login()">登录</button>
+    </div>
+    <div class="status" id="loginStatus"></div>
+  </div>
+</div>
+
+<div class="page hidden" id="adminPage">
+  <div class="header">
+    <div>
+      <div class="title">Snow123 后台管理</div>
+      <div class="desc">管理报价项目，直接写入数据库后端，不再改 HTML 或 JSON。</div>
+    </div>
+    <div class="toolbar">
+      <button class="btn btn-secondary" onclick="logout()">退出登录</button>
+      <button class="btn btn-secondary" onclick="loadItems()">刷新列表</button>
+      <button class="btn btn-primary" onclick="resetForm()">新建项目</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="panel hero-card">
+      <div class="hero-kicker">Business Console</div>
+      <div class="hero-title">一个页面统一管理项目、分类配置和历史报价单。</div>
+      <div class="hero-desc">左侧处理单条项目编辑，右侧集中处理列表、导航结构和报价归档。适合继续往真正的业务系统扩展，不需要再回头改静态 HTML 数据。</div>
+    </div>
+    <div class="overview-stack">
+      <div class="overview-grid" id="overviewCards">
+        <div class="stat-card">
+          <div class="stat-label">项目总数</div>
+          <div class="stat-value">-</div>
+          <div class="stat-meta">正在读取数据</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">可见分类</div>
+          <div class="stat-value">-</div>
+          <div class="stat-meta">正在读取数据</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">分组数量</div>
+          <div class="stat-value">-</div>
+          <div class="stat-meta">正在读取数据</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">报价存档</div>
+          <div class="stat-value">-</div>
+          <div class="stat-meta">正在读取数据</div>
+        </div>
+      </div>
+      <div class="activity-grid">
+        <div class="activity-card">
+          <div class="activity-title">最近报价单</div>
+          <div class="activity-list" id="recentQuotes">正在读取数据</div>
+        </div>
+        <div class="activity-card">
+          <div class="activity-title">最近编辑项目</div>
+          <div class="activity-list" id="recentItems">正在读取数据</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel sticky-panel">
+      <div class="side-nav">
+        <div class="side-nav-title">快捷导航</div>
+        <a href="#inventorySection">项目列表 <span>01</span></a>
+        <a href="#navSection">分类配置 <span>02</span></a>
+        <a href="#quoteSection">报价归档 <span>03</span></a>
+      </div>
+      <div class="panel-top">
+        <div>
+          <div class="panel-kicker">Editor</div>
+          <h2 id="formTitle" style="margin-top:10px">新建项目</h2>
+        </div>
+        <span class="badge-soft">项目维护</span>
+      </div>
+      <div class="section-note">支持新建、编辑和删除单条项目记录，保存后直接进入数据库。</div>
+      <div class="subtle-sep"></div>
+      <div class="grid2">
+        <div class="field">
+          <label for="category_id">分类 ID</label>
+          <input id="category_id" placeholder="例如 us / tool / appeal">
+        </div>
+        <div class="field">
+          <label for="sort_order">排序</label>
+          <input id="sort_order" type="number" value="0">
+        </div>
+      </div>
+      <div class="field">
+        <label for="category">显示分类</label>
+        <input id="category" placeholder="例如 FB 群组">
+      </div>
+      <div class="field">
+        <label for="name">名称</label>
+        <input id="name" placeholder="项目名称">
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label for="price">价格</label>
+          <input id="price" placeholder="例如 398 / 100美金">
+        </div>
+        <div class="field">
+          <label for="currency">币种</label>
+          <input id="currency" value="CNY">
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label for="platform">平台</label>
+          <input id="platform" placeholder="例如 AMZ">
+        </div>
+        <div class="field">
+          <label for="form">形式</label>
+          <input id="form" placeholder="例如 编辑帖">
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label for="time">时效</label>
+          <input id="time" placeholder="例如 1-3天">
+        </div>
+        <div class="field">
+          <label for="traffic">流量</label>
+          <input id="traffic" placeholder="可留空">
+        </div>
+      </div>
+      <div class="field">
+        <label for="url">主链接</label>
+        <input id="url" placeholder="https://...">
+      </div>
+      <div class="field">
+        <label for="sample_url">样例链接</label>
+        <input id="sample_url" placeholder="https://...">
+      </div>
+      <div class="field">
+        <label for="desc">描述</label>
+        <textarea id="desc" placeholder="项目说明"></textarea>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="submitForm()">保存</button>
+        <button class="btn btn-secondary" onclick="resetForm()">清空</button>
+        <button class="btn btn-secondary" id="deleteBtn" onclick="deleteCurrent()" style="display:none">删除当前</button>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="stack">
+      <div class="panel" id="inventorySection">
+        <div class="panel-top">
+          <div>
+            <div class="panel-kicker">Inventory</div>
+            <h2 style="margin-top:10px">项目列表</h2>
+          </div>
+          <span class="badge-soft">实时检索</span>
+        </div>
+        <div class="stats-strip" id="itemStats">
+          <div class="stats-chip"><div class="label">项目总数</div><div class="value">-</div></div>
+          <div class="stats-chip"><div class="label">筛选结果</div><div class="value">-</div></div>
+          <div class="stats-chip"><div class="label">当前分类</div><div class="value">-</div></div>
+          <div class="stats-chip"><div class="label">当前页</div><div class="value">-</div></div>
+        </div>
+        <div class="filters filters-4">
+          <input id="search" class="search" placeholder="搜索名称 / 分类 / 平台" oninput="renderTable()">
+          <select id="categoryFilter" onchange="renderTable()">
+            <option value="">全部分类</option>
+          </select>
+          <select id="itemSort" onchange="renderTable()">
+            <option value="default">默认排序</option>
+            <option value="name_asc">名称 A-Z</option>
+            <option value="name_desc">名称 Z-A</option>
+            <option value="price_asc">价格低到高</option>
+            <option value="price_desc">价格高到低</option>
+          </select>
+          <select id="itemPageSize" onchange="changeItemPageSize()">
+            <option value="10">每页 10 条</option>
+            <option value="20" selected>每页 20 条</option>
+            <option value="50">每页 50 条</option>
+          </select>
+        </div>
+        <div class="bulk-tools">
+          <select id="bulkCategoryId">
+            <option value="">批量改分类ID</option>
+          </select>
+          <input id="bulkCategoryName" placeholder="批量改显示分类，如 FB群组">
+          <input id="bulkPlatform" placeholder="批量改平台，如 AMZ">
+          <input id="bulkPrice" placeholder="批量改单价，如 399 / 100美金">
+          <button class="btn btn-secondary" onclick="bulkUpdateSelected()">批量应用</button>
+        </div>
+        <div class="table-shell" style="overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>分类ID</th>
+                <th>名称</th>
+                <th>价格</th>
+                <th>平台</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="footer-note" id="itemTableMeta">暂无数据</div>
+          <div class="pager">
+            <button class="mini" onclick="bulkDuplicateSelected()">批量复制</button>
+            <button class="mini" onclick="bulkDeleteSelected()">批量删除</button>
+            <button class="mini" onclick="changeItemPage(-1)">上一页</button>
+            <span class="footer-note" id="itemPageInfo">第 1 / 1 页</span>
+            <button class="mini" onclick="changeItemPage(1)">下一页</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="navSection">
+        <div class="panel-top">
+          <div>
+            <div class="panel-kicker">Navigation</div>
+            <h2 style="margin-top:10px">分类与分组管理</h2>
+          </div>
+          <button class="btn btn-secondary" onclick="loadNavMeta()">刷新分类配置</button>
+        </div>
+        <div id="metaStatus" class="status"></div>
+        <div class="stack">
+          <div>
+            <h3 style="margin:0 0 10px;font-size:15px;color:var(--brand-deep)">分组</h3>
+            <div id="groupRows"></div>
+          </div>
+          <div>
+            <h3 style="margin:0 0 10px;font-size:15px;color:var(--brand-deep)">分类</h3>
+            <div id="categoryRows"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="settingsSection">
+        <div class="panel-top">
+          <div>
+            <div class="panel-kicker">Settings</div>
+            <h2 style="margin-top:10px">系统设置</h2>
+          </div>
+          <button class="btn btn-secondary" onclick="loadAuditLogs()">刷新日志</button>
+        </div>
+        <div class="field">
+          <label for="currentAdminPassword">当前管理员密码</label>
+          <input id="currentAdminPassword" type="password" placeholder="输入当前密码">
+        </div>
+        <div class="field">
+          <label for="newAdminPassword">新管理员密码</label>
+          <input id="newAdminPassword" type="password" placeholder="至少 6 位">
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary" onclick="changeAdminPassword()">修改管理员密码</button>
+        </div>
+        <div class="subtle-sep"></div>
+        <div class="section-note" style="margin-bottom:10px">最近操作日志</div>
+        <div id="auditStatus" class="status"></div>
+        <div id="auditLogs" class="stack"></div>
+      </div>
+
+      <div class="panel" id="quoteSection">
+        <div class="panel-top">
+          <div>
+            <div class="panel-kicker">Archive</div>
+            <h2 style="margin-top:10px">报价单存档</h2>
+          </div>
+          <button class="btn btn-secondary" onclick="loadQuotes()">刷新报价单</button>
+        </div>
+        <div id="quoteStatus" class="status"></div>
+        <div class="filters filters-4">
+          <input id="quoteSearch" class="search" placeholder="搜索编号 / 客户 / 业务员" oninput="renderQuotes()">
+          <select id="quoteSort" onchange="renderQuotes()">
+            <option value="date_desc">日期最新</option>
+            <option value="date_asc">日期最早</option>
+            <option value="amount_desc">金额高到低</option>
+            <option value="amount_asc">金额低到高</option>
+          </select>
+          <div></div>
+          <select id="quotePageSize" onchange="changeQuotePageSize()">
+            <option value="5">每页 5 条</option>
+            <option value="10" selected>每页 10 条</option>
+            <option value="20">每页 20 条</option>
+          </select>
+        </div>
+        <div class="table-shell" style="overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>编号</th>
+                <th>客户</th>
+                <th>业务员</th>
+                <th>报价日期</th>
+                <th>有效期至</th>
+                <th>金额</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="quoteRows"></tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="footer-note" id="quoteTableMeta">暂无数据</div>
+          <div class="pager">
+            <button class="mini" onclick="exportQuotesExcel()">导出Excel</button>
+            <button class="mini" onclick="exportQuotesCsv()">导出CSV</button>
+            <button class="mini" onclick="changeQuotePage(-1)">上一页</button>
+            <span class="footer-note" id="quotePageInfo">第 1 / 1 页</span>
+            <button class="mini" onclick="changeQuotePage(1)">下一页</button>
+          </div>
+        </div>
+        <div class="quote-detail" id="quoteDetail">请选择一份报价单查看详情。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="./config.js"></script>
+<script>
+function getDefaultApiBase() {
+  const configured = String(window.SNOW123_API_BASE || '').trim();
+  if (configured) return configured.replace(/\/$/, '');
+
+  const { protocol, hostname, origin } = window.location;
+  if (protocol !== 'file:' && hostname && hostname !== '127.0.0.1' && hostname !== 'localhost') {
+    return origin.replace(/\/$/, '');
+  }
+
+  return 'http://127.0.0.1:8787';
+}
+
+const API = getDefaultApiBase();
+const TOKEN_KEY = 'snow123_admin_token_v1';
+let items = [];
+let navGroups = [];
+let navCategories = [];
+let quotes = [];
+let currentId = 0;
+let currentQuoteId = 0;
+let itemPage = 1;
+let quotePage = 1;
+let selectedItemIds = [];
+let auditLogs = [];
+
+function getToken() {
+  return localStorage.getItem(TOKEN_KEY) || '';
+}
+
+function setToken(token) {
+  if (token) localStorage.setItem(TOKEN_KEY, token);
+  else localStorage.removeItem(TOKEN_KEY);
+}
+
+function showLogin(show) {
+  document.getElementById('loginPage').classList.toggle('hidden', !show);
+  document.getElementById('adminPage').classList.toggle('hidden', show);
+}
+
+function setLoginStatus(text, isError) {
+  const el = document.getElementById('loginStatus');
+  el.textContent = text || '';
+  el.className = 'status' + (isError ? ' danger' : '');
+}
+
+function fields() {
+  return {
+    category_id: document.getElementById('category_id'),
+    sort_order: document.getElementById('sort_order'),
+    category: document.getElementById('category'),
+    name: document.getElementById('name'),
+    price: document.getElementById('price'),
+    currency: document.getElementById('currency'),
+    platform: document.getElementById('platform'),
+    form: document.getElementById('form'),
+    time: document.getElementById('time'),
+    traffic: document.getElementById('traffic'),
+    url: document.getElementById('url'),
+    sample_url: document.getElementById('sample_url'),
+    desc: document.getElementById('desc'),
+  };
+}
+
+function setStatus(text, isError) {
+  const el = document.getElementById('status');
+  el.textContent = text || '';
+  el.className = 'status' + (isError ? ' danger' : '');
+}
+
+function setMetaStatus(text, isError) {
+  const el = document.getElementById('metaStatus');
+  el.textContent = text || '';
+  el.className = 'status' + (isError ? ' danger' : '');
+}
+
+function setQuoteStatus(text, isError) {
+  const el = document.getElementById('quoteStatus');
+  el.textContent = text || '';
+  el.className = 'status' + (isError ? ' danger' : '');
+}
+
+function setAuditStatus(text, isError) {
+  const el = document.getElementById('auditStatus');
+  if (!el) return;
+  el.textContent = text || '';
+  el.className = 'status' + (isError ? ' danger' : '');
+}
+
+function isItemSelected(id) {
+  return selectedItemIds.includes(id);
+}
+
+function toggleItemSelection(id, checked) {
+  if (checked) {
+    if (!selectedItemIds.includes(id)) selectedItemIds.push(id);
+  } else {
+    selectedItemIds = selectedItemIds.filter((itemId) => itemId !== id);
+  }
+  renderTable();
+}
+
+function toggleAllCurrentPage(checked) {
+  const rows = getCurrentPagedItems();
+  const ids = rows.map((item) => item.id);
+  if (checked) {
+    ids.forEach((id) => {
+      if (!selectedItemIds.includes(id)) selectedItemIds.push(id);
+    });
+  } else {
+    selectedItemIds = selectedItemIds.filter((id) => !ids.includes(id));
+  }
+  renderTable();
+}
+
+function getCurrentPagedItems() {
+  const filtered = getFilteredItems();
+  const pageSize = Number(document.getElementById('itemPageSize').value || 20);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  if (itemPage > totalPages) itemPage = totalPages;
+  const start = (itemPage - 1) * pageSize;
+  return filtered.slice(start, start + pageSize);
+}
+
+function getFilteredItems() {
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  const categoryFilter = document.getElementById('categoryFilter').value;
+  const sortType = document.getElementById('itemSort').value;
+  const filtered = items.filter((item) => {
+    const text = [item.category_id, item.category, item.name, item.platform, item.price].join(' ').toLowerCase();
+    const matchText = !q || text.includes(q);
+    const matchCategory = !categoryFilter || item.category_id === categoryFilter;
+    return matchText && matchCategory;
+  });
+  if (sortType === 'name_asc') {
+    filtered.sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'zh-CN'));
+  } else if (sortType === 'name_desc') {
+    filtered.sort((a, b) => String(b.name || '').localeCompare(String(a.name || ''), 'zh-CN'));
+  } else if (sortType === 'price_asc') {
+    filtered.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+  } else if (sortType === 'price_desc') {
+    filtered.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+  }
+  return filtered;
+}
+
+function getFilteredQuotes() {
+  const q = document.getElementById('quoteSearch').value.trim().toLowerCase();
+  const sortType = document.getElementById('quoteSort').value;
+  const filtered = quotes.filter((quote) => {
+    const text = [quote.quote_no, quote.customer_company, quote.customer_name, quote.salesperson].join(' ').toLowerCase();
+    return !q || text.includes(q);
+  });
+  if (sortType === 'date_asc') {
+    filtered.sort((a, b) => String(a.quote_date || '').localeCompare(String(b.quote_date || '')));
+  } else if (sortType === 'amount_desc') {
+    filtered.sort((a, b) => Number(b.total_amount || 0) - Number(a.total_amount || 0));
+  } else if (sortType === 'amount_asc') {
+    filtered.sort((a, b) => Number(a.total_amount || 0) - Number(b.total_amount || 0));
+  } else {
+    filtered.sort((a, b) => String(b.quote_date || '').localeCompare(String(a.quote_date || '')));
+  }
+  return filtered;
+}
+
+function fillCategoryFilter() {
+  const el = document.getElementById('categoryFilter');
+  const current = el.value;
+  const options = ['<option value="">全部分类</option>'].concat(
+    navCategories.map((category) => `<option value="${escapeAttr(category.id)}">${escapeHtml(category.label)} (${escapeHtml(category.id)})</option>`)
+  );
+  el.innerHTML = options.join('');
+  el.value = navCategories.some((item) => item.id === current) ? current : '';
+
+  const bulkEl = document.getElementById('bulkCategoryId');
+  if (bulkEl) {
+    const bulkCurrent = bulkEl.value;
+    bulkEl.innerHTML = ['<option value="">批量改分类ID</option>'].concat(
+      navCategories.map((category) => `<option value="${escapeAttr(category.id)}">${escapeHtml(category.label)} (${escapeHtml(category.id)})</option>`)
+    ).join('');
+    bulkEl.value = navCategories.some((item) => item.id === bulkCurrent) ? bulkCurrent : '';
+  }
+}
+
+function renderOverview() {
+  const visibleCategories = navCategories.filter((item) => item.is_visible).length;
+  const quoteTotal = quotes.reduce((sum, quote) => sum + Number(quote.total_amount || 0), 0);
+  document.getElementById('overviewCards').innerHTML = [
+    {
+      label: '项目总数',
+      value: String(items.length),
+      meta: items.length ? '当前数据库内可编辑项目' : '暂无项目数据'
+    },
+    {
+      label: '可见分类',
+      value: String(visibleCategories),
+      meta: navCategories.length ? '共 ' + navCategories.length + ' 个分类配置' : '暂无分类配置'
+    },
+    {
+      label: '分组数量',
+      value: String(navGroups.length),
+      meta: navGroups.length ? '导航结构已接入数据库' : '暂无分组数据'
+    },
+    {
+      label: '报价存档',
+      value: String(quotes.length),
+      meta: quotes.length ? '累计金额 ' + formatMoney(quoteTotal, quotes[0] && quotes[0].currency) : '暂无历史报价单'
+    }
+  ].map((card) => `
+    <div class="stat-card">
+      <div class="stat-label">${escapeHtml(card.label)}</div>
+      <div class="stat-value">${escapeHtml(card.value)}</div>
+      <div class="stat-meta">${escapeHtml(card.meta)}</div>
+    </div>
+  `).join('');
+
+  const recentQuoteHtml = quotes
+    .slice()
+    .sort((a, b) => String(b.quote_date || '').localeCompare(String(a.quote_date || '')))
+    .slice(0, 3)
+    .map((quote) => `
+      <div class="activity-item">
+        <strong>${escapeHtml(quote.quote_no || '')}</strong>
+        <span>${escapeHtml(quote.customer_company || '未填写客户')} · ${escapeHtml(quote.quote_date || '')} · ${formatMoney(quote.total_amount, quote.currency)}</span>
+      </div>
+    `).join('') || '<div class="activity-item"><span>暂无报价单</span></div>';
+
+  const recentItemHtml = items
+    .slice()
+    .sort((a, b) => Number(b.id || 0) - Number(a.id || 0))
+    .slice(0, 3)
+    .map((item) => `
+      <div class="activity-item">
+        <strong>${escapeHtml(item.name || '')}</strong>
+        <span>${escapeHtml(item.category_id || '')} · ${escapeHtml(item.platform || '未填写平台')} · ${escapeHtml(item.price || '未填写价格')}</span>
+      </div>
+    `).join('') || '<div class="activity-item"><span>暂无项目</span></div>';
+
+  document.getElementById('recentQuotes').innerHTML = recentQuoteHtml;
+  document.getElementById('recentItems').innerHTML = recentItemHtml;
+}
+
+function renderAuditLogs() {
+  const el = document.getElementById('auditLogs');
+  if (!el) return;
+  el.innerHTML = auditLogs.map((log) => `
+    <div class="panel" style="padding:12px;margin-bottom:0">
+      <div style="font-weight:800;color:var(--brand-deep)">${escapeHtml(log.action || '')}</div>
+      <div style="margin-top:4px;color:var(--muted);font-size:12px">${escapeHtml(log.target_type || '')} · ${escapeHtml(log.target_id || '')} · ${escapeHtml(log.created_at || '')}</div>
+      <div style="margin-top:8px;color:var(--text);font-size:12px;word-break:break-word">${escapeHtml(log.detail || '')}</div>
+    </div>
+  `).join('') || '<div style="color:#5c788b">暂无操作日志</div>';
+}
+
+function resetForm() {
+  currentId = 0;
+  const f = fields();
+  Object.keys(f).forEach((key) => {
+    f[key].value = key === 'currency' ? 'CNY' : (key === 'sort_order' ? '0' : '');
+  });
+  document.getElementById('formTitle').textContent = '新建项目';
+  document.getElementById('deleteBtn').style.display = 'none';
+  setStatus('');
+}
+
+function fillForm(item) {
+  currentId = item.id;
+  const f = fields();
+  Object.keys(f).forEach((key) => {
+    f[key].value = item[key] ?? '';
+  });
+  document.getElementById('formTitle').textContent = '编辑项目 #' + item.id;
+  document.getElementById('deleteBtn').style.display = 'inline-flex';
+  setStatus('');
+}
+
+function payloadFromForm() {
+  const f = fields();
+  return {
+    category_id: f.category_id.value.trim(),
+    sort_order: Number(f.sort_order.value || 0),
+    category: f.category.value.trim(),
+    name: f.name.value.trim(),
+    price: f.price.value.trim(),
+    currency: f.currency.value.trim() || 'CNY',
+    platform: f.platform.value.trim(),
+    form: f.form.value.trim(),
+    time: f.time.value.trim(),
+    traffic: f.traffic.value.trim(),
+    url: f.url.value.trim(),
+    sample_url: f.sample_url.value.trim(),
+    desc: f.desc.value.trim(),
+  };
+}
+
+async function request(url, options) {
+  const token = getToken();
+  const headers = Object.assign(
+    { 'Content-Type': 'application/json' },
+    (options && options.headers) || {}
+  );
+  if (token) headers.Authorization = 'Bearer ' + token;
+  const res = await fetch(url, Object.assign({}, options || {}, { headers }));
+  const data = await res.json();
+  if (!res.ok || data.ok === false) {
+    throw new Error(data.error || 'Request failed');
+  }
+  return data;
+}
+
+async function login() {
+  const password = document.getElementById('loginPassword').value;
+  setLoginStatus('登录中...');
+  try {
+    const data = await request(API + '/api/admin/login', {
+      method: 'POST',
+      body: JSON.stringify({ password }),
+      headers: { 'Content-Type': 'application/json' }
+    });
+    setToken(data.token || '');
+    showLogin(false);
+    setLoginStatus('');
+    await loadItems();
+  } catch (error) {
+    setLoginStatus(error.message, true);
+  }
+}
+
+async function logout() {
+  try {
+    await request(API + '/api/admin/logout', { method: 'POST', body: '{}' });
+  } catch (error) {
+    console.warn(error);
+  }
+  setToken('');
+  showLogin(true);
+  setStatus('');
+}
+
+async function checkSession() {
+  const token = getToken();
+  if (!token) {
+    showLogin(true);
+    return;
+  }
+  try {
+    const data = await request(API + '/api/admin/session');
+    if (!data.authenticated) {
+      setToken('');
+      showLogin(true);
+      return;
+    }
+    showLogin(false);
+    await loadItems();
+  } catch (error) {
+    setToken('');
+    showLogin(true);
+  }
+}
+
+async function loadItems() {
+  setStatus('加载中...');
+  try {
+    const data = await request(API + '/api/admin/items');
+    items = data.items || [];
+    selectedItemIds = selectedItemIds.filter((id) => items.some((item) => item.id === id));
+    itemPage = 1;
+    renderTable();
+    setStatus('已加载 ' + items.length + ' 条项目');
+    await loadNavMeta();
+    await loadQuotes();
+    await loadAuditLogs();
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+async function loadAuditLogs() {
+  setAuditStatus('加载中...');
+  try {
+    const data = await request(API + '/api/admin/audit-logs?limit=12');
+    auditLogs = data.logs || [];
+    renderAuditLogs();
+    setAuditStatus('已加载 ' + auditLogs.length + ' 条日志');
+  } catch (error) {
+    setAuditStatus(error.message, true);
+  }
+}
+
+async function loadQuotes() {
+  setQuoteStatus('加载中...');
+  try {
+    const data = await request(API + '/api/admin/quotes');
+    quotes = data.quotes || [];
+    quotePage = 1;
+    renderQuotes();
+    renderOverview();
+    if (currentQuoteId && quotes.some((quote) => quote.id === currentQuoteId)) {
+      await loadQuoteDetail(currentQuoteId, true);
+    } else {
+      currentQuoteId = 0;
+      renderQuotePlaceholder(quotes.length ? '请选择一份报价单查看详情。' : '暂无报价单');
+    }
+    setQuoteStatus('已加载 ' + quotes.length + ' 份报价单');
+  } catch (error) {
+    setQuoteStatus(error.message, true);
+  }
+}
+
+async function loadNavMeta() {
+  setMetaStatus('加载中...');
+  try {
+    const data = await request(API + '/api/admin/nav');
+    navGroups = data.groups || [];
+    navCategories = data.categories || [];
+    fillCategoryFilter();
+    renderMeta();
+    renderOverview();
+    setMetaStatus('分类配置已加载');
+  } catch (error) {
+    setMetaStatus(error.message, true);
+  }
+}
+
+function renderTable() {
+  const filtered = getFilteredItems();
+  const pageSize = Number(document.getElementById('itemPageSize').value || 20);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  if (itemPage > totalPages) itemPage = totalPages;
+  const start = (itemPage - 1) * pageSize;
+  const paged = filtered.slice(start, start + pageSize);
+  const currentCategoryId = document.getElementById('categoryFilter').value;
+  const currentCategory = currentCategoryId ? (navCategories.find((item) => item.id === currentCategoryId)?.label || currentCategoryId) : '全部';
+  const currentPageIds = paged.map((item) => item.id);
+  const allChecked = currentPageIds.length > 0 && currentPageIds.every((id) => selectedItemIds.includes(id));
+  const rows = paged.map((item) => `
+    <tr>
+      <td class="check-cell"><input class="check-input" type="checkbox" ${isItemSelected(item.id) ? 'checked' : ''} onchange="toggleItemSelection(${item.id}, this.checked)"></td>
+      <td>${item.id}</td>
+      <td>${escapeHtml(item.category_id)}</td>
+      <td><strong>${escapeHtml(item.name)}</strong><br><span style="color:#5c788b">${escapeHtml(item.category || '')}</span></td>
+      <td>${escapeHtml(item.price || '')}</td>
+      <td>${escapeHtml(item.platform || '')}</td>
+      <td>
+        <div class="row-actions">
+          <button class="mini" onclick="editItem(${item.id})">编辑</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+  document.getElementById('rows').innerHTML = rows || '<tr><td colspan="7" style="color:#5c788b">没有数据</td></tr>';
+  const thead = document.querySelector('#inventorySection thead tr');
+  if (thead) {
+    thead.innerHTML = `
+      <th class="check-cell"><input class="check-input" type="checkbox" ${allChecked ? 'checked' : ''} onchange="toggleAllCurrentPage(this.checked)"></th>
+      <th>ID</th>
+      <th>分类ID</th>
+      <th>名称</th>
+      <th>价格</th>
+      <th>平台</th>
+      <th>操作</th>
+    `;
+  }
+  document.getElementById('itemTableMeta').textContent = filtered.length ? `共 ${filtered.length} 条，当前显示 ${start + 1}-${Math.min(start + pageSize, filtered.length)} 条，已选 ${selectedItemIds.length} 条` : '暂无匹配数据';
+  document.getElementById('itemPageInfo').textContent = `第 ${itemPage} / ${totalPages} 页`;
+  document.getElementById('itemStats').innerHTML = `
+    <div class="stats-chip"><div class="label">项目总数</div><div class="value">${items.length}</div></div>
+    <div class="stats-chip"><div class="label">筛选结果</div><div class="value">${filtered.length}</div></div>
+    <div class="stats-chip"><div class="label">当前分类</div><div class="value">${escapeHtml(currentCategory)}</div></div>
+    <div class="stats-chip"><div class="label">当前页</div><div class="value">${itemPage}/${totalPages}</div></div>
+  `;
+}
+
+function editItem(id) {
+  const item = items.find((it) => it.id === id);
+  if (item) fillForm(item);
+}
+
+function renderMeta() {
+  document.getElementById('groupRows').innerHTML = navGroups.map((group) => `
+    <div class="panel" style="padding:12px;margin-bottom:10px">
+      <div class="grid2">
+        <div class="field">
+          <label>分组ID</label>
+          <input value="${escapeAttr(group.id)}" disabled>
+        </div>
+        <div class="field">
+          <label>排序</label>
+          <input id="group-sort-${escapeAttr(group.id)}" type="number" value="${group.sort_order}">
+        </div>
+      </div>
+      <div class="field">
+        <label>分组标题</label>
+        <input id="group-title-${escapeAttr(group.id)}" value="${escapeAttr(group.title)}">
+      </div>
+      <button class="mini" onclick="saveGroup('${escapeAttr(group.id)}')">保存分组</button>
+    </div>
+  `).join('');
+
+  document.getElementById('categoryRows').innerHTML = navCategories.map((category) => `
+    <div class="panel" style="padding:12px;margin-bottom:10px">
+      <div class="grid2">
+        <div class="field">
+          <label>分类ID</label>
+          <input value="${escapeAttr(category.id)}" disabled>
+        </div>
+        <div class="field">
+          <label>排序</label>
+          <input id="cat-sort-${escapeAttr(category.id)}" type="number" value="${category.sort_order}">
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>名称</label>
+          <input id="cat-label-${escapeAttr(category.id)}" value="${escapeAttr(category.label)}">
+        </div>
+        <div class="field">
+          <label>图标</label>
+          <input id="cat-icon-${escapeAttr(category.id)}" value="${escapeAttr(category.icon)}">
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>所属分组</label>
+          <input id="cat-group-${escapeAttr(category.id)}" value="${escapeAttr(category.group_id)}">
+        </div>
+        <div class="field">
+          <label>显示状态</label>
+          <input id="cat-visible-${escapeAttr(category.id)}" value="${category.is_visible ? '1' : '0'}" placeholder="1显示 0隐藏">
+        </div>
+      </div>
+      <button class="mini" onclick="saveCategoryMeta('${escapeAttr(category.id)}')">保存分类</button>
+    </div>
+  `).join('');
+}
+
+function renderQuotes() {
+  const filtered = getFilteredQuotes();
+  const pageSize = Number(document.getElementById('quotePageSize').value || 10);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  if (quotePage > totalPages) quotePage = totalPages;
+  const start = (quotePage - 1) * pageSize;
+  const paged = filtered.slice(start, start + pageSize);
+  document.getElementById('quoteRows').innerHTML = paged.map((quote) => `
+    <tr>
+      <td>${escapeHtml(quote.quote_no)}</td>
+      <td>${escapeHtml(quote.customer_company || '')}${quote.customer_name ? '<br><span style="color:#5c788b">' + escapeHtml(quote.customer_name) + '</span>' : ''}</td>
+      <td>${escapeHtml(quote.salesperson || '')}</td>
+      <td>${escapeHtml(quote.quote_date || '')}</td>
+      <td>${escapeHtml(quote.valid_until || '')}</td>
+      <td>${formatMoney(quote.total_amount, quote.currency)}</td>
+      <td>
+        <div class="row-actions">
+          <button class="mini" onclick="loadQuoteDetail(${quote.id})">查看</button>
+        </div>
+      </td>
+    </tr>
+  `).join('') || '<tr><td colspan="7" style="color:#5c788b">暂无报价单</td></tr>';
+  document.getElementById('quoteTableMeta').textContent = filtered.length ? `共 ${filtered.length} 份，当前显示 ${start + 1}-${Math.min(start + pageSize, filtered.length)} 份` : '暂无匹配报价单';
+  document.getElementById('quotePageInfo').textContent = `第 ${quotePage} / ${totalPages} 页`;
+}
+
+function changeItemPage(delta) {
+  const filtered = getFilteredItems();
+  const pageSize = Number(document.getElementById('itemPageSize').value || 20);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  itemPage = Math.min(totalPages, Math.max(1, itemPage + delta));
+  renderTable();
+}
+
+function changeQuotePage(delta) {
+  const filtered = getFilteredQuotes();
+  const pageSize = Number(document.getElementById('quotePageSize').value || 10);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  quotePage = Math.min(totalPages, Math.max(1, quotePage + delta));
+  renderQuotes();
+}
+
+function changeItemPageSize() {
+  itemPage = 1;
+  renderTable();
+}
+
+function changeQuotePageSize() {
+  quotePage = 1;
+  renderQuotes();
+}
+
+function parsePrice(value) {
+  const num = String(value || '').replace(/[^0-9.]/g, '');
+  return Number(num || 0);
+}
+
+async function bulkDeleteSelected() {
+  if (!selectedItemIds.length) {
+    setStatus('请先选择要删除的项目', true);
+    return;
+  }
+  if (!confirm('确定批量删除已选中的 ' + selectedItemIds.length + ' 个项目吗？')) return;
+  try {
+    await request(API + '/api/admin/items/bulk-delete', {
+      method: 'POST',
+      body: JSON.stringify({ ids: selectedItemIds })
+    });
+    setStatus('批量删除成功');
+    selectedItemIds = [];
+    await loadItems();
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+async function bulkUpdateSelected() {
+  if (!selectedItemIds.length) {
+    setStatus('请先选择要批量修改的项目', true);
+    return;
+  }
+  const payload = { ids: selectedItemIds };
+  const categoryId = document.getElementById('bulkCategoryId').value.trim();
+  const categoryName = document.getElementById('bulkCategoryName').value.trim();
+  const platform = document.getElementById('bulkPlatform').value.trim();
+  const price = document.getElementById('bulkPrice').value.trim();
+  if (categoryId) payload.category_id = categoryId;
+  if (categoryName) payload.category = categoryName;
+  if (platform) payload.platform = platform;
+  if (price) payload.price = price;
+  if (Object.keys(payload).length === 1) {
+    setStatus('请至少填写一个批量修改字段', true);
+    return;
+  }
+  try {
+    await request(API + '/api/admin/items/bulk-update', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    setStatus('批量修改成功');
+    document.getElementById('bulkCategoryName').value = '';
+    document.getElementById('bulkPlatform').value = '';
+    document.getElementById('bulkPrice').value = '';
+    await loadItems();
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+async function bulkDuplicateSelected() {
+  if (!selectedItemIds.length) {
+    setStatus('请先选择要复制的项目', true);
+    return;
+  }
+  try {
+    await request(API + '/api/admin/items/bulk-duplicate', {
+      method: 'POST',
+      body: JSON.stringify({ ids: selectedItemIds })
+    });
+    setStatus('批量复制成功');
+    await loadItems();
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+async function changeAdminPassword() {
+  const currentPassword = document.getElementById('currentAdminPassword').value;
+  const newPassword = document.getElementById('newAdminPassword').value;
+  if (!currentPassword || !newPassword) {
+    setStatus('请填写当前密码和新密码', true);
+    return;
+  }
+  try {
+    await request(API + '/api/admin/change-password', {
+      method: 'POST',
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword
+      })
+    });
+    document.getElementById('currentAdminPassword').value = '';
+    document.getElementById('newAdminPassword').value = '';
+    setStatus('管理员密码已更新');
+    await loadAuditLogs();
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+function renderQuotePlaceholder(text) {
+  document.getElementById('quoteDetail').innerHTML = '<div style="color:#5c788b">' + escapeHtml(text || '请选择一份报价单查看详情。') + '</div>';
+}
+
+async function loadQuoteDetail(id, silent) {
+  currentQuoteId = id;
+  if (!silent) renderQuotePlaceholder('详情加载中...');
+  try {
+    const data = await request(API + '/api/admin/quotes/' + id);
+    renderQuoteDetail(data.quote ? Object.assign({}, data.quote, { items: data.items || [] }) : null);
+  } catch (error) {
+    renderQuotePlaceholder('加载失败：' + error.message);
+  }
+}
+
+function renderQuoteDetail(quote) {
+  if (!quote) {
+    renderQuotePlaceholder('未找到报价单详情。');
+    return;
+  }
+
+  const itemsHtml = (quote.items || []).map((item) => `
+    <tr>
+      <td>${escapeHtml(item.item_name || '')}</td>
+      <td>${escapeHtml(item.item_category || item.category_id || '')}</td>
+      <td>${escapeHtml(item.platform || '')}</td>
+      <td>${escapeHtml(item.qty || 1)}</td>
+      <td>${formatMoney(item.unit_price, quote.currency)}</td>
+      <td>${formatMoney(item.subtotal, quote.currency)}</td>
+    </tr>
+  `).join('') || '<tr><td colspan="6" style="color:#5c788b">无明细</td></tr>';
+
+  document.getElementById('quoteDetail').innerHTML = `
+    <div class="quote-detail-actions">
+      <button class="mini" onclick="copyQuoteSummary()">复制摘要</button>
+      <button class="mini" onclick="printQuoteDetail()">打印</button>
+      <button class="mini" onclick="openQuotePrintView()">导出打印版</button>
+      <button class="mini" onclick="cloneQuoteToBuilder()">重新生成同款报价</button>
+      <button class="mini" onclick="saveQuoteNotes()">保存备注</button>
+      <button class="mini" onclick="deleteQuoteCurrent()">删除报价单</button>
+    </div>
+    <div class="quote-detail-grid">
+      <div class="quote-detail-card"><div class="k">报价单编号</div><div class="v" id="quote-detail-no">${escapeHtml(quote.quote_no || '')}</div></div>
+      <div class="quote-detail-card"><div class="k">客户公司</div><div class="v" id="quote-detail-company">${escapeHtml(quote.customer_company || '-')}</div></div>
+      <div class="quote-detail-card"><div class="k">联系人</div><div class="v" id="quote-detail-name">${escapeHtml(quote.customer_name || '-')}</div></div>
+      <div class="quote-detail-card"><div class="k">业务员</div><div class="v" id="quote-detail-sales">${escapeHtml(quote.salesperson || '-')}</div></div>
+      <div class="quote-detail-card"><div class="k">报价日期</div><div class="v" id="quote-detail-date">${escapeHtml(quote.quote_date || '')}</div></div>
+      <div class="quote-detail-card"><div class="k">有效期至</div><div class="v" id="quote-detail-valid">${escapeHtml(quote.valid_until || '')}</div></div>
+      <div class="quote-detail-card"><div class="k">有效天数</div><div class="v" id="quote-detail-days">${escapeHtml(quote.valid_days || 0)} 天</div></div>
+      <div class="quote-detail-card"><div class="k">总金额</div><div class="v" id="quote-detail-total">${formatMoney(quote.total_amount, quote.currency)}</div></div>
+      <div class="quote-detail-card"><div class="k">创建时间</div><div class="v">${escapeHtml(quote.created_at || '')}</div></div>
+    </div>
+    <div class="field">
+      <label>备注</label>
+      <textarea id="quoteNotesEditor">${escapeHtml(quote.notes || '')}</textarea>
+    </div>
+    <div style="overflow:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>项目名称</th>
+            <th>分类</th>
+            <th>平台</th>
+            <th>数量</th>
+            <th>单价</th>
+            <th>小计</th>
+          </tr>
+        </thead>
+        <tbody>${itemsHtml}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+async function copyQuoteSummary() {
+  if (!currentQuoteId) return;
+  try {
+    const quoteNo = document.getElementById('quote-detail-no')?.textContent || '';
+    const company = document.getElementById('quote-detail-company')?.textContent || '';
+    const name = document.getElementById('quote-detail-name')?.textContent || '';
+    const sales = document.getElementById('quote-detail-sales')?.textContent || '';
+    const date = document.getElementById('quote-detail-date')?.textContent || '';
+    const valid = document.getElementById('quote-detail-valid')?.textContent || '';
+    const total = document.getElementById('quote-detail-total')?.textContent || '';
+    const text = [
+      '报价单编号：' + quoteNo,
+      '客户公司：' + company,
+      '联系人：' + name,
+      '业务员：' + sales,
+      '报价日期：' + date,
+      '有效期至：' + valid,
+      '总金额：' + total
+    ].join('\n');
+    await navigator.clipboard.writeText(text);
+    setQuoteStatus('报价单摘要已复制');
+  } catch (error) {
+    setQuoteStatus('复制失败：' + error.message, true);
+  }
+}
+
+function buildQuotePrintHtml() {
+  const quoteNo = document.getElementById('quote-detail-no')?.textContent || '';
+  const company = document.getElementById('quote-detail-company')?.textContent || '';
+  const name = document.getElementById('quote-detail-name')?.textContent || '';
+  const sales = document.getElementById('quote-detail-sales')?.textContent || '';
+  const date = document.getElementById('quote-detail-date')?.textContent || '';
+  const valid = document.getElementById('quote-detail-valid')?.textContent || '';
+  const days = document.getElementById('quote-detail-days')?.textContent || '';
+  const total = document.getElementById('quote-detail-total')?.textContent || '';
+  const notes = document.querySelector('#quoteDetail textarea')?.value || '';
+  const rows = Array.from(document.querySelectorAll('#quoteDetail tbody tr')).map((tr) => {
+    const cells = Array.from(tr.querySelectorAll('td')).map((td) => `<td>${td.innerHTML}</td>`).join('');
+    return `<tr>${cells}</tr>`;
+  }).join('');
+  return `<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>报价单 ${escapeHtml(quoteNo)}</title>
+<style>
+body{font-family:'Avenir Next','PingFang SC','Microsoft YaHei',sans-serif;margin:0;background:#f5f7f3;color:#1f2f27;padding:32px}
+.sheet{max-width:980px;margin:0 auto;background:#fff;border:1px solid #dfe9e2;border-radius:24px;padding:32px;box-shadow:0 20px 48px rgba(0,0,0,.08)}
+.head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:26px}
+.brand{font-size:32px;font-weight:800;color:#155f40;letter-spacing:-.04em}
+.sub{margin-top:10px;color:#64806f;line-height:1.7}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px}
+.card{border:1px solid #e5efe8;border-radius:16px;padding:14px;background:#fafdfb}
+.k{font-size:12px;color:#6b8274;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.v{margin-top:8px;font-size:16px;color:#203229;font-weight:700;word-break:break-word}
+table{width:100%;border-collapse:collapse;margin-top:12px}
+th,td{border-bottom:1px solid #e8f0ea;padding:12px 10px;text-align:left;font-size:13px}
+th{color:#6b8274;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+.notes{margin-top:18px;border:1px solid #e5efe8;border-radius:16px;padding:14px;background:#fafdfb;white-space:pre-wrap}
+.actions{margin:0 auto 18px;max-width:980px;display:flex;justify-content:flex-end;gap:8px}
+button{border:none;background:#155f40;color:#fff;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
+@media print {.actions{display:none} body{padding:0;background:#fff}.sheet{box-shadow:none;border:none;border-radius:0;max-width:none}}
+@media (max-width:760px){body{padding:14px}.grid{grid-template-columns:1fr}.head{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="actions">
+  <button onclick="window.print()">打印</button>
+</div>
+<div class="sheet">
+  <div class="head">
+    <div>
+      <div class="brand">Snow123 报价单</div>
+      <div class="sub">用于客户确认和内部留档。页面由后台实时生成，可直接打印或导出为 PDF。</div>
+    </div>
+    <div class="v">${escapeHtml(quoteNo)}</div>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="k">客户公司</div><div class="v">${escapeHtml(company)}</div></div>
+    <div class="card"><div class="k">联系人</div><div class="v">${escapeHtml(name)}</div></div>
+    <div class="card"><div class="k">业务员</div><div class="v">${escapeHtml(sales)}</div></div>
+    <div class="card"><div class="k">报价日期</div><div class="v">${escapeHtml(date)}</div></div>
+    <div class="card"><div class="k">有效期至</div><div class="v">${escapeHtml(valid)}</div></div>
+    <div class="card"><div class="k">有效天数</div><div class="v">${escapeHtml(days)}</div></div>
+    <div class="card"><div class="k">总金额</div><div class="v">${escapeHtml(total)}</div></div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>项目名称</th>
+        <th>分类</th>
+        <th>平台</th>
+        <th>数量</th>
+        <th>单价</th>
+        <th>小计</th>
+      </tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <div class="notes"><div class="k">备注</div><div class="v">${escapeHtml(notes || '无')}</div></div>
+</div>
+</body>
+</html>`;
+}
+
+function openQuotePrintView() {
+  if (!currentQuoteId) {
+    setQuoteStatus('请先选择一份报价单', true);
+    return;
+  }
+  const win = window.open('', '_blank');
+  if (!win) {
+    setQuoteStatus('浏览器拦截了新窗口，请允许弹窗后重试', true);
+    return;
+  }
+  win.document.open();
+  win.document.write(buildQuotePrintHtml());
+  win.document.close();
+}
+
+function printQuoteDetail() {
+  if (!currentQuoteId) {
+    setQuoteStatus('请先选择一份报价单', true);
+    return;
+  }
+  const win = window.open('', '_blank');
+  if (!win) {
+    setQuoteStatus('浏览器拦截了新窗口，请允许弹窗后重试', true);
+    return;
+  }
+  win.document.open();
+  win.document.write(buildQuotePrintHtml());
+  win.document.close();
+  setTimeout(() => win.print(), 300);
+}
+
+function cloneQuoteToBuilder() {
+  if (!currentQuoteId) {
+    setQuoteStatus('请先选择一份报价单', true);
+    return;
+  }
+  const quoteNo = document.getElementById('quote-detail-no')?.textContent || '';
+  const company = document.getElementById('quote-detail-company')?.textContent || '';
+  const name = document.getElementById('quote-detail-name')?.textContent || '';
+  const sales = document.getElementById('quote-detail-sales')?.textContent || '';
+  const daysText = document.getElementById('quote-detail-days')?.textContent || '7';
+  const validDays = parseInt(daysText, 10) || 7;
+  const rows = Array.from(document.querySelectorAll('#quoteDetail tbody tr')).map((tr) => {
+    const tds = Array.from(tr.querySelectorAll('td'));
+    return {
+      item_name: tds[0]?.textContent?.trim() || '',
+      item_category: tds[1]?.textContent?.trim() || '',
+      platform: tds[2]?.textContent?.trim() || '',
+      qty: Number(tds[3]?.textContent?.trim() || 1),
+      unit_price: parsePrice(tds[4]?.textContent || ''),
+      subtotal: parsePrice(tds[5]?.textContent || '')
+    };
+  }).filter((item) => item.item_name);
+  localStorage.setItem('snow123_quote_draft_v1', JSON.stringify({
+    source_quote_id: currentQuoteId,
+    quote_no: quoteNo,
+    customer_company: company === '-' ? '' : company,
+    customer_name: name === '-' ? '' : name,
+    salesperson: sales === '-' ? '' : sales,
+    quote_valid_days: validDays,
+    items: rows
+  }));
+  window.location.href = './quote.html?draft=1';
+}
+
+async function saveQuoteNotes() {
+  if (!currentQuoteId) {
+    setQuoteStatus('请先选择一份报价单', true);
+    return;
+  }
+  const notes = document.getElementById('quoteNotesEditor')?.value || '';
+  try {
+    await request(API + '/api/admin/quotes/' + currentQuoteId, {
+      method: 'PATCH',
+      body: JSON.stringify({ notes })
+    });
+    setQuoteStatus('报价单备注已保存');
+    await loadQuoteDetail(currentQuoteId, true);
+    await loadQuotes();
+    await loadAuditLogs();
+  } catch (error) {
+    setQuoteStatus(error.message, true);
+  }
+}
+
+async function deleteQuoteCurrent() {
+  if (!currentQuoteId) {
+    setQuoteStatus('请先选择一份报价单', true);
+    return;
+  }
+  const quoteNo = document.getElementById('quote-detail-no')?.textContent || '';
+  const company = document.getElementById('quote-detail-company')?.textContent || '';
+  if (!confirm('确定删除当前报价单吗？\n\n编号：' + quoteNo + '\n客户：' + company)) return;
+  try {
+    await request(API + '/api/admin/quotes/' + currentQuoteId, {
+      method: 'DELETE'
+    });
+    currentQuoteId = 0;
+    renderQuotePlaceholder('请选择一份报价单查看详情。');
+    setQuoteStatus('报价单已删除');
+    await loadQuotes();
+    await loadAuditLogs();
+  } catch (error) {
+    setQuoteStatus(error.message, true);
+  }
+}
+
+function escapeCsv(value) {
+  const text = String(value ?? '');
+  if (/[",\n]/.test(text)) return '"' + text.replace(/"/g, '""') + '"';
+  return text;
+}
+
+function exportQuotesCsv() {
+  const filtered = getFilteredQuotes();
+  if (!filtered.length) {
+    setQuoteStatus('暂无可导出的报价单', true);
+    return;
+  }
+  const lines = [
+    ['报价单编号', '客户公司', '联系人', '业务员', '报价日期', '有效期至', '有效天数', '总金额', '币种', '创建时间'].join(',')
+  ];
+  filtered.forEach((quote) => {
+    lines.push([
+      escapeCsv(quote.quote_no),
+      escapeCsv(quote.customer_company),
+      escapeCsv(quote.customer_name),
+      escapeCsv(quote.salesperson),
+      escapeCsv(quote.quote_date),
+      escapeCsv(quote.valid_until),
+      escapeCsv(quote.valid_days),
+      escapeCsv(quote.total_amount),
+      escapeCsv(quote.currency),
+      escapeCsv(quote.created_at)
+    ].join(','));
+  });
+  const blob = new Blob(['\uFEFF' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'snow123-quotes-' + new Date().toISOString().slice(0, 10) + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  setQuoteStatus('报价单CSV已导出');
+}
+
+function exportQuotesExcel() {
+  const filtered = getFilteredQuotes();
+  if (!filtered.length) {
+    setQuoteStatus('暂无可导出的报价单', true);
+    return;
+  }
+  const header = ['报价单编号', '客户公司', '联系人', '业务员', '报价日期', '有效期至', '有效天数', '总金额', '币种', '创建时间'];
+  let html = '<html><head><meta charset="UTF-8"></head><body><table border="1"><tr>' +
+    header.map((item) => `<th>${escapeHtml(item)}</th>`).join('') +
+    '</tr>';
+  filtered.forEach((quote) => {
+    html += '<tr>' + [
+      quote.quote_no,
+      quote.customer_company,
+      quote.customer_name,
+      quote.salesperson,
+      quote.quote_date,
+      quote.valid_until,
+      quote.valid_days,
+      quote.total_amount,
+      quote.currency,
+      quote.created_at
+    ].map((value) => `<td>${escapeHtml(value)}</td>`).join('') + '</tr>';
+  });
+  html += '</table></body></html>';
+  const blob = new Blob(['\uFEFF' + html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'snow123-quotes-' + new Date().toISOString().slice(0, 10) + '.xls';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  setQuoteStatus('报价单Excel已导出');
+}
+
+async function saveGroup(id) {
+  try {
+    await request(API + '/api/admin/groups/' + id, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        title: document.getElementById('group-title-' + id).value,
+        sort_order: Number(document.getElementById('group-sort-' + id).value || 0)
+      })
+    });
+    setMetaStatus('分组已更新');
+    await loadNavMeta();
+  } catch (error) {
+    setMetaStatus(error.message, true);
+  }
+}
+
+async function saveCategoryMeta(id) {
+  try {
+    await request(API + '/api/admin/categories/' + id, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        label: document.getElementById('cat-label-' + id).value,
+        icon: document.getElementById('cat-icon-' + id).value,
+        group_id: document.getElementById('cat-group-' + id).value,
+        sort_order: Number(document.getElementById('cat-sort-' + id).value || 0),
+        is_visible: String(document.getElementById('cat-visible-' + id).value).trim() === '1'
+      })
+    });
+    setMetaStatus('分类已更新');
+    await loadNavMeta();
+  } catch (error) {
+    setMetaStatus(error.message, true);
+  }
+}
+
+async function submitForm() {
+  const payload = payloadFromForm();
+  try {
+    if (currentId) {
+      await request(API + '/api/admin/items/' + currentId, {
+        method: 'PATCH',
+        body: JSON.stringify(payload)
+      });
+      setStatus('更新成功');
+    } else {
+      await request(API + '/api/admin/items', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      setStatus('创建成功');
+    }
+    await loadItems();
+    if (!currentId) resetForm();
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+async function deleteCurrent() {
+  if (!currentId) return;
+  if (!confirm('确定删除当前项目吗？')) return;
+  try {
+    await request(API + '/api/admin/items/' + currentId, { method: 'DELETE' });
+    setStatus('删除成功');
+    resetForm();
+    await loadItems();
+  } catch (error) {
+    setStatus(error.message, true);
+  }
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value).replace(/`/g, '&#96;');
+}
+
+function formatMoney(value, currency) {
+  const amount = Number(value || 0);
+  const prefix = currency === 'USD' ? '$' : '¥';
+  return prefix + amount.toLocaleString('zh-CN', {
+    minimumFractionDigits: amount % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: 2
+  });
+}
+
+resetForm();
+checkSession();
+</script>
+</body>
+</html>
