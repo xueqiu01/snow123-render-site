@@ -1,0 +1,8 @@
+{
+  "name": "snow123-render-root",
+  "private": true,
+  "scripts": {
+    "start": "node backend/server.js",
+    "postinstall": "cd backend && npm install"
+  }
+}
